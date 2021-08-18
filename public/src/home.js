@@ -11,7 +11,9 @@ function getTotalAccountsCount(accounts) {
 }
 //It returns a number that represents
 //the number of account objects inside of the array.
-
+//orders.reduce((total, currentOrder) => {
+//return total + currentOrder.total
+//}, 0)
 function getBooksBorrowedCount(books) {
   let checkedOut = books.filter((book) =>
     book.borrows.find((borrow) => borrow.returned === false)
@@ -25,9 +27,8 @@ key of each book. If the transaction says the book has not been
 returned (i.e. `returned: false`), the book has been borrowed. */
 
 function getMostCommonGenres(books) {
-  let countObj = {};
   //Use the .foreach loop to find the most common genres
-
+  let countObj = {};
   books.forEach((Book) => {
     if (countObj[Book.genre] == null) {
       countObj[Book.genre] = 1;
@@ -47,6 +48,7 @@ function getMostCommonGenres(books) {
 
   //Use the sort and slice method to trim the list to only the top 5
   countArray.sort((count1, count2) => count2.count - count1.count);
+  console.log(countArray.slice(0, 5));
   return countArray.slice(0, 5);
 }
 
@@ -64,16 +66,13 @@ Each object in the returned array has two keys:
 If more than five genres are present, only the top five should be returned.
 */
 function getMostPopularBooks(books) {
-  let sorted = books
-    .sort((b, a) => a.borrows.length - b.borrows.length)
-    .slice(0, 5)
-    .map((book) => {
-      return {
-        name: book.title,
-        count: book.borrows.length,
-      };
-    });
-  return sorted;
+  let result = [];
+
+  books.reduce((acc, book) => {
+    result.push({ name: book.title, count: book.borrows.length });
+  }, []);
+  console.log(result.sort((b, a) => a.count - b.count).slice(0, 5));
+  return result.sort((b, a) => a.count - b.count).slice(0, 5);
 }
 //It returns an array containing five objects or fewer
 // that represents the most popular books in the library.
@@ -88,27 +87,6 @@ function getMostPopularBooks(books) {
 // If more than five books are present, only the top five should be returned.
 
 function getMostPopularAuthors(books, authors) {
-  //sort book by most borrowed
-  //total borrowed for each author
-  //find all book for each author and sum all borrows
-  //aggregate all borrows for all books for each author
-  //   let authorAndCount = [];
-  //   let authorBookIdMatch = authors.map((author) => {
-  //     let obj = {};
-  //     obj.name = author.name;
-  //     obj.count = books.reduce((acc, book) => {
-  //       if (book.authorId == author.id) {
-  //         acc += book.borrows.length;
-  //         return acc;
-  //       }
-  //     }, 0);
-  //     return authorAndCount.push(obj)
-  //       .push(obj
-  //       .sort((b, a) => a.borrows.length - b.borrows.length)
-  //       .slice(0, 5));
-  //   });
-  // }
-  // function getMostPopularAuthors(books, authors) {
   return books
     .map((book) => {
       const author = authors.find((author) => author.id === book.authorId);
@@ -120,18 +98,6 @@ function getMostPopularAuthors(books, authors) {
     .sort((a, b) => b.count - a.count)
     .slice(0, 5);
 }
-
-//returns array of books with authorId same as BookId
-
-//   .map((book) => {
-//     return {
-//       name: authors.name,
-//       count: book.borrows.length,
-//     };
-//   });
-// return sorted;
-// match the books array authorId with authors author id to return the name
-//somehow push the name into an array with name and count of borrows
 
 /* It returns an array containing five objects or fewer that 
 represents the most popular authors whose books have been checked 
